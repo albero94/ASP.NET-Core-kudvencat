@@ -26,15 +26,14 @@ namespace ASP.NET_Core_MVC_kudvenkat
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
+            app.UseStaticFiles();
 
-            app.UseEndpoints(endpoints =>
+            app.Run(async (context) =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                await context.Response.WriteAsync("Hosting Environment: " + env.EnvironmentName);
             });
+
+            
         }
     }
 }
