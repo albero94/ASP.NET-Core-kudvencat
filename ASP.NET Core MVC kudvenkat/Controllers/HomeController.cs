@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ASP.NET_Core_MVC_kudvenkat.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,15 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 {
     public class HomeController : Controller
     {
-        public JsonResult Index()
+        private IEmployeeRepository _employeeRepository;
+
+        public HomeController(IEmployeeRepository employeeRepository)
         {
-            return Json(new { id = 1, name = "Jeffry" });
+            _employeeRepository = employeeRepository;
+        }
+        public string Index()
+        {
+            return _employeeRepository.GetEmployee(1).Name;
         }
     }
 }
