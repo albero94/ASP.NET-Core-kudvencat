@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 {
-    [Route("Home")]
+    [Route("[controller]")]
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
@@ -19,7 +19,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [Route("")]
-        [Route("Index")]
+        [Route("[action]")]
         [Route("~/")]
         public ViewResult Index()
         {
@@ -27,7 +27,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             return View(model);
         }
 
-        [Route("Details/{id?}")]
+        [Route("[action]/{id?}")]
         public ViewResult Details(int? id)
         {
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
