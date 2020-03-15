@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 {
+    [Route("Home")]
     public class HomeController : Controller
     {
         private readonly IEmployeeRepository _employeeRepository;
@@ -16,18 +17,23 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         {
             _employeeRepository = employeeRepository;
         }
+
+        [Route("")]
+        [Route("Index")]
+        [Route("~/")]
         public ViewResult Index()
         {
             var model = _employeeRepository.GetAllEmployees();
             return View(model);
         }
 
-        public ViewResult Details(int id = 1)
+        [Route("Details/{id?}")]
+        public ViewResult Details(int? id)
         {
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
                 PageTitle = "Employee Details",
-                Employee = _employeeRepository.GetEmployee(id)
+                Employee = _employeeRepository.GetEmployee(id??1)
             };
             return View(homeDetailsViewModel);
         }
