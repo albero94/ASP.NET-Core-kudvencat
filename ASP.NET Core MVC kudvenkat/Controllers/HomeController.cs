@@ -1,4 +1,5 @@
 ﻿using ASP.NET_Core_MVC_kudvenkat.Models;
+using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,10 +21,14 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             return _employeeRepository.GetEmployee(1).Name;
         }
 
-        public ObjectResult Details()
+        public ViewResult Details()
         {
-            Employee model = _employeeRepository.GetEmployee(1);
-            return new ObjectResult(model);
+            HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
+            {
+                PageTitle = "Employee Details",
+                Employee = _employeeRepository.GetEmployee(1)
+            };
+            return View(homeDetailsViewModel);
         }
     }
 }
