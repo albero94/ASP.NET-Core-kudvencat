@@ -18,6 +18,12 @@ namespace ASP.NET_Core_MVC_kudvenkat.Models
                 new Employee(){Id = 1, Name = "Sam", Email = "sam@mail.com", Department = "IT"}
             };
         }
+
+        public IEnumerable<Employee> GetAllEmployees()
+        {
+            return _employeeList;
+        }
+
         public Employee GetEmployee(int Id)
         {
             return _employeeList.FirstOrDefault(e => e.Id == Id);

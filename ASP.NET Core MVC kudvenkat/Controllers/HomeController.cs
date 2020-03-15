@@ -16,9 +16,10 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         {
             _employeeRepository = employeeRepository;
         }
-        public string Index()
+        public ViewResult Index()
         {
-            return _employeeRepository.GetEmployee(1).Name;
+            var model = _employeeRepository.GetAllEmployees();
+            return View(model);
         }
 
         public ViewResult Details()
