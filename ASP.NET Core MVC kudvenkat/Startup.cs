@@ -31,14 +31,11 @@ namespace ASP.NET_Core_MVC_kudvenkat
 
             app.UseStaticFiles();
 
-            app.UseMvcWithDefaultRoute();
-
-            app.Run(async (context) =>
+            //app.UseMvcWithDefaultRoute();
+            app.UseMvc(routes =>
             {
-                await context.Response.WriteAsync("Hello world!");
-            });
-
-            
+                routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
+            });         
         }
     }
 }
