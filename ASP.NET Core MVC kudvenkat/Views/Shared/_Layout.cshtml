@@ -3,14 +3,27 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
+    <environment include="Development">
+        <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
+    </environment>
+    <environment include="Staging,Production">
+        @*exclude="Development"*@
+        <link rel="stylesheet" 
+              href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" 
+              crossorigin="anonymous"
+              asp-fallback-href="~/lib/bootstrap/css/bootstrap.css"
+              asp-fallback-test-class="sr-only"
+              asp-fallback-test-property="position"
+              asp-fallback-test-value="absolute"
+              asp-suppress-fallback-integrity="true">
+    </environment>
     <link href="~/css/site.css" rel="stylesheet" />
     <title>@ViewBag.Title</title>
 </head>
 <body>
     <div class="container">
         @RenderBody()
-    </div>
+    </div> 
     @if (IsSectionDefined("Scripts"))
     {
         @RenderSection("Scripts", required: true)
