@@ -32,5 +32,11 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             };
             return View(homeDetailsViewModel);
         }
+
+        public ViewResult Create()
+        {
+
+            return View();
+        }
     }
 }
