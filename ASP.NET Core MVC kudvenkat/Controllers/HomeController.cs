@@ -28,7 +28,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
                 PageTitle = "Employee Details",
-                Employee = _employeeRepository.GetEmployee(id??1)
+                Employee = _employeeRepository.GetEmployee(id ?? 1)
             };
             return View(homeDetailsViewModel);
         }
@@ -40,10 +40,13 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpPost]
-        public RedirectToActionResult Create(Employee employee)
+        public IActionResult Create(Employee employee)
         {
+            if (!ModelState.IsValid) return View();
+
             Employee newEmployee = _employeeRepository.Add(employee);
             return RedirectToAction("details", new { id = employee.Id });
+
         }
     }
 }
