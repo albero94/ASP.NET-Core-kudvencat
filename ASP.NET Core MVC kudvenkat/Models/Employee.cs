@@ -16,6 +16,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Models
         [Display(Name = "Office Email")]
         [EmailAddress]
         public string Email { get; set; }
-        public Dept Department { get; set; }
+        [Required]
+        public Dept? Department { get; set; }
     }
 }
