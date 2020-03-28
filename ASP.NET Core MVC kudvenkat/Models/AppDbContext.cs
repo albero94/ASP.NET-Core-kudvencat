@@ -15,5 +15,10 @@ namespace ASP.NET_Core_MVC_kudvenkat.Models
         }
 
         public DbSet<Employee> Employees { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Seed();
+        }
     }
 }

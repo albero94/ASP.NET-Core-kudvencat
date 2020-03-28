@@ -3,14 +3,16 @@ using ASP.NET_Core_MVC_kudvenkat.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200328172357_SeedEmployeesTable")]
+    partial class SeedEmployeesTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,20 +50,6 @@ namespace ASP.NET_Core_MVC_kudvenkat.Migrations
                             Department = 2,
                             Email = "mark@email.com",
                             Name = "Mark"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Department = 2,
-                            Email = "mary@email.com",
-                            Name = "Mary"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Department = 1,
-                            Email = "john@email.com",
-                            Name = "John"
                         });
                 });
 #pragma warning restore 612, 618
