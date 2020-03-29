@@ -1,10 +1,10 @@
-﻿@model Employee
+﻿@model EmployeeCreateViewModel
 
 @{
     ViewBag.Title = "Create Employee";
 }
 
-<form asp-controller="Home" asp-action="Create" method="post" class="mt-3">
+<form enctype="multipart/form-data" asp-controller="Home" asp-action="Create" method="post" class="mt-3">
     <div class="form-group row">
         <label asp-for="Name" class="col-sm-2 col-form-label"></label>
         <div class="col-sm-10">
@@ -29,8 +29,39 @@
             <span asp-validation-for="Department" class="text-danger"></span>
         </div>
     </div>
+    <div class="form-group row">
+        <label asp-for="Photo" class="col-sm-2 col-form-label"></label>
+        <div class="col-sm-10">
+            <div class="custom-file">
+                <input asp-for="Photo" class="form-control custom-file-input" />
+                <span class="custom-file-label">Choose File...</span>
+            </div>
+        </div>
+    </div>
     <div asp-validation-summary="All" class="text-danger"></div>
     <div>
         <button type="submit" class="btn btn-primary">Create</button>
     </div>
+
+    @section Scripts{
+        <script>
+            // JQuery
+            //$(document).ready(function () {
+            //    $('.custom-file-input').on("change", function () {
+            //        var fileName = $(this).val().split("\\").pop();
+            //        $(this).next('.custom-file-label').html(fileName);
+            //    });
+            //});
+
+            // My JavaScript
+            (function () {
+                const fileInput = document.querySelector('.custom-file-input');
+                const fileLabel = document.querySelector('.custom-file-label');
+                fileInput.addEventListener('change', event => {
+                    const fileName = fileInput.value.split("\\").pop();
+                    fileLabel.innerHTML = fileName;
+                });
+            })();
+        </script>
+    }
 </form>
