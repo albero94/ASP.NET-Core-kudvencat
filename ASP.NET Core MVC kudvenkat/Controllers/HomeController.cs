@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -49,16 +50,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         public IActionResult Create(EmployeeCreateViewModel model)
         {
             if (!ModelState.IsValid) return View();
-
-            string uniqueFileName = null;
-            
-            if(model.Photo.FileName != null)
-            {
-                string folderPath = Path.Combine(hostingEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid() + "_" + model.Photo.FileName;
-                string filePath = Path.Combine(folderPath, uniqueFileName);
-                model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
-            }
+            string uniqueFileName = ProcessUploadedFile(model);
 
             Employee newEmployee = new Employee()
             {
@@ -85,6 +77,50 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                 ExistingPhotoPath = employee.PhotoPath
             };
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Edit(EmployeeEditViewModel model)
+        {
+            if (!ModelState.IsValid) return View();
+
+            Employee employee = _employeeRepository.GetEmployee(model.Id);
+            employee.Name = model.Name;
+            employee.Email = model.Email;
+            employee.Department = model.Department;
+
+            if (model.Photo != null)
+            {
+                if (model.ExistingPhotoPath != null)
+                {
+                    string filePath = Path.Combine(hostingEnvironment.WebRootPath,
+                        "images", model.ExistingPhotoPath);
+
+                    System.IO.File.Delete(filePath);
+                }
+
+                employee.PhotoPath = ProcessUploadedFile(model);
+            }
+
+            _employeeRepository.Update(employee);
+            return RedirectToAction("index");
+        }
+
+        private string ProcessUploadedFile(EmployeeCreateViewModel model)
+        {
+            string uniqueFileName = null;
+            if (model.Photo.FileName != null)
+            {
+                string folderPath = Path.Combine(hostingEnvironment.WebRootPath, "images");
+                uniqueFileName = Guid.NewGuid() + "_" + model.Photo.FileName;
+                string filePath = Path.Combine(folderPath, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    model.Photo.CopyTo(fileStream);
+                }
+            }
+
+            return uniqueFileName;
         }
     }
 }
