@@ -32,10 +32,18 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
         public ViewResult Details(int? id)
         {
+            Employee employee = _employeeRepository.GetEmployee(id ?? 1);
+
+            if(employee == null)
+            {
+                Response.StatusCode = 404;
+                return View("EmployeeNofFound", id.Value);
+            }
+
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
             {
                 PageTitle = "Employee Details",
-                Employee = _employeeRepository.GetEmployee(id ?? 1)
+                Employee = employee
             };
             return View(homeDetailsViewModel);
         }
