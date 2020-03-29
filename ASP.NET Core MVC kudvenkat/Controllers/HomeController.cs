@@ -1,6 +1,7 @@
 ﻿using ASP.NET_Core_MVC_kudvenkat.Models;
 using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -69,6 +70,21 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             _employeeRepository.Add(newEmployee);
             return RedirectToAction("details", new { id = newEmployee.Id });
 
+        }
+
+        [HttpGet]
+        public ViewResult Edit(int id)
+        {
+            Employee employee = _employeeRepository.GetEmployee(id);
+            EmployeeEditViewModel viewModel = new EmployeeEditViewModel()
+            {
+                Id = employee.Id,
+                Name = employee.Name,
+                Email = employee.Email,
+                Department = employee.Department,
+                ExistingPhotoPath = employee.PhotoPath
+            };
+            return View(viewModel);
         }
     }
 }
