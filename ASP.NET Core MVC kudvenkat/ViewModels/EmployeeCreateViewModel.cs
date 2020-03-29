@@ -19,6 +19,6 @@ namespace ASP.NET_Core_MVC_kudvenkat.ViewModels
         public string Email { get; set; }
         [Required]
         public Dept? Department { get; set; }
-        public List<IFormFile> Photos { get; set; }
+        public IFormFile Photo { get; set; }
     }
 }
