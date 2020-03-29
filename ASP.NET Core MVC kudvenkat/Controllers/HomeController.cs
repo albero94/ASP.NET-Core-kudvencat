@@ -1,6 +1,7 @@
 ﻿using ASP.NET_Core_MVC_kudvenkat.Models;
 using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -51,12 +52,15 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
             string uniqueFileName = null;
             
-            if(model.Photo.FileName != null)
+            if(model.Photos != null && model.Photos.Count > 0)
             {
-                string folderPath = Path.Combine(hostingEnvironment.WebRootPath, "images");
-                uniqueFileName = Guid.NewGuid() + "_" + model.Photo.FileName;
-                string filePath = Path.Combine(folderPath, uniqueFileName);
-                model.Photo.CopyTo(new FileStream(filePath, FileMode.Create));
+                foreach (IFormFile photo in model.Photos)
+                {
+                    string folderPath = Path.Combine(hostingEnvironment.WebRootPath, "images");
+                    uniqueFileName = Guid.NewGuid() + "_" + photo.FileName;
+                    string filePath = Path.Combine(folderPath, uniqueFileName);
+                    photo.CopyTo(new FileStream(filePath, FileMode.Create)); 
+                }
             }
 
             Employee newEmployee = new Employee()
