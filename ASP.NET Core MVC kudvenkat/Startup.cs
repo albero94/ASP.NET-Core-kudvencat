@@ -42,6 +42,7 @@ namespace ASP.NET_Core_MVC_kudvenkat
             }
             else
             {
+                app.UseExceptionHandler("/Error");
                 app.UseStatusCodePagesWithReExecute("/Error/{0}");
             }
 
