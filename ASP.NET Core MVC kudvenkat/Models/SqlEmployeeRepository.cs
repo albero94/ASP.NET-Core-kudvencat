@@ -44,9 +44,6 @@ namespace ASP.NET_Core_MVC_kudvenkat.Models
 
         public Employee GetEmployee(int id)
         {
-            logger.LogInformation("Information log");
-            logger.LogWarning("Warning log");
-            logger.LogError("Error log");
             return context.Employees.Find(id);
         }
 

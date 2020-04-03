@@ -36,11 +36,6 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
         public ViewResult Details(int? id)
         {
-            logger.LogInformation("Information log");
-            logger.LogWarning("Warning log");
-            logger.LogError("Error log");
-
-
             //throw new Exception("Error in Details View");
             Employee employee = _employeeRepository.GetEmployee(id ?? 1);
 
