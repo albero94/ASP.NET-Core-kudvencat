@@ -3,6 +3,7 @@ using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -16,12 +17,15 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
     {
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IWebHostEnvironment hostingEnvironment;
+        private readonly ILogger logger;
 
         public HomeController(IEmployeeRepository employeeRepository,
-            IWebHostEnvironment hostingEnvironment)
+            IWebHostEnvironment hostingEnvironment,
+            ILogger<HomeController> logger)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
+            this.logger = logger;
         }
 
         public ViewResult Index()
@@ -32,7 +36,12 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
         public ViewResult Details(int? id)
         {
-            throw new Exception("Error in Details View");
+            logger.LogInformation("Information log");
+            logger.LogWarning("Warning log");
+            logger.LogError("Error log");
+
+
+            //throw new Exception("Error in Details View");
             Employee employee = _employeeRepository.GetEmployee(id ?? 1);
 
             if(employee == null)

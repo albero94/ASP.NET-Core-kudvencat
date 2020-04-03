@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,13 @@ namespace ASP.NET_Core_MVC_kudvenkat.Models
     public class SqlEmployeeRepository : IEmployeeRepository
     {
         private readonly AppDbContext context;
+        private readonly ILogger<SqlEmployeeRepository> logger;
 
-        public SqlEmployeeRepository(AppDbContext context)
+        public SqlEmployeeRepository(AppDbContext context,
+            ILogger<SqlEmployeeRepository> logger)
         {
             this.context = context;
+            this.logger = logger;
         }
         public Employee Add(Employee employee)
         {
@@ -40,6 +44,9 @@ namespace ASP.NET_Core_MVC_kudvenkat.Models
 
         public Employee GetEmployee(int id)
         {
+            logger.LogInformation("Information log");
+            logger.LogWarning("Warning log");
+            logger.LogError("Error log");
             return context.Employees.Find(id);
         }
 
