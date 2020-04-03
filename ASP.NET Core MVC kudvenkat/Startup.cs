@@ -6,6 +6,7 @@ using ASP.NET_Core_MVC_kudvenkat.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,8 +28,9 @@ namespace ASP.NET_Core_MVC_kudvenkat
             services.AddDbContextPool<AppDbContext>(
                 options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection"))
             );
+            services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
             services.AddMvc(option => option.EnableEndpointRouting = false).AddXmlSerializerFormatters();
-            
             //services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
             services.AddScoped<IEmployeeRepository, SqlEmployeeRepository>();
         }
@@ -47,7 +49,7 @@ namespace ASP.NET_Core_MVC_kudvenkat
             }
 
             app.UseStaticFiles();
-
+            app.UseAuthentication();
             //app.UseMvcWithDefaultRoute();
             app.UseMvc(routes =>
             {
