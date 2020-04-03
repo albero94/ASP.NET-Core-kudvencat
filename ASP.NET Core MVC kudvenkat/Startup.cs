@@ -28,8 +28,13 @@ namespace ASP.NET_Core_MVC_kudvenkat
             services.AddDbContextPool<AppDbContext>(
                 options => options.UseSqlServer(_config.GetConnectionString("EmployeeDBConnection"))
             );
-            services.AddIdentity<IdentityUser, IdentityRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<AppDbContext>();
+
             services.AddMvc(option => option.EnableEndpointRouting = false).AddXmlSerializerFormatters();
             //services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
             services.AddScoped<IEmployeeRepository, SqlEmployeeRepository>();
