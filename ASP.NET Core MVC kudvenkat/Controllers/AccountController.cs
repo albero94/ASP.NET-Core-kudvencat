@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,6 +21,30 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
+        }
+
+        [HttpGet]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await signInManager.PasswordSignInAsync(
+                    model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("index", "home");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+            }
+            return View();
         }
 
         [HttpPost]
