@@ -1,5 +1,6 @@
 ﻿using ASP.NET_Core_MVC_kudvenkat.Models;
 using ASP.NET_Core_MVC_kudvenkat.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -27,13 +28,13 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             this.hostingEnvironment = hostingEnvironment;
             this.logger = logger;
         }
-
+        [AllowAnonymous]
         public ViewResult Index()
         {
             var model = _employeeRepository.GetAllEmployees();
             return View(model);
         }
-
+        [AllowAnonymous]
         public ViewResult Details(int? id)
         {
             //throw new Exception("Error in Details View");
@@ -93,7 +94,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit(EmployeeEditViewModel model)
+    public ActionResult Edit(EmployeeEditViewModel model)
         {
             if (!ModelState.IsValid) return View();
 
