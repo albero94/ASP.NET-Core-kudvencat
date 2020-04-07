@@ -86,5 +86,16 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             }
             return View(model);
         }
+
+        [HttpPost][HttpGet]
+        //[AcceptVerbs("Get", "Post")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsEmailInUse(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null) return Json(true);
+            else return Json($"Email {email} is alrady in use.");
+        }
     }
 }
