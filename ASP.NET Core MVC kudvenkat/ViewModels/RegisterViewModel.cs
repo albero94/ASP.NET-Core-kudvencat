@@ -24,5 +24,6 @@ namespace ASP.NET_Core_MVC_kudvenkat.ViewModels
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage ="Passwords do not match.")]
         public string ConfirmPassword { get; set; }
+        public string City { get; set; }
     }
 }
