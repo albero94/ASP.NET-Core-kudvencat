@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ASP.NET_Core_MVC_kudvenkat.Models;
-using ASP.NET_Core_MVC_kudvenkat.ViewModels;
+﻿using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Threading.Tasks;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 {
@@ -33,7 +28,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                 IdentityRole identityRole = new IdentityRole(model.RoleName);
                 IdentityResult result = await roleManager.CreateAsync(identityRole);
 
-                if (result.Succeeded) return RedirectToAction("index", "home");
+                if (result.Succeeded) return RedirectToAction("ListRoles", "administration");
 
                 foreach (IdentityError error in result.Errors)
                 {
@@ -42,6 +37,12 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             }
 
             return View(model);
+        }
+        [HttpGet]
+        public IActionResult ListRoles()
+        {
+            var roles = roleManager.Roles;
+            return View(roles);
         }
     }
 }
