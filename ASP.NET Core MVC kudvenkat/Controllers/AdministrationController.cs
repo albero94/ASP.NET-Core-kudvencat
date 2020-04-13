@@ -1,17 +1,15 @@
 ﻿using ASP.NET_Core_MVC_kudvenkat.Models;
 using ASP.NET_Core_MVC_kudvenkat.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.VisualBasic.CompilerServices;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 {
+    //[Authorize("Admin")]  it did not work, something has changed in my .NET Core version
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
