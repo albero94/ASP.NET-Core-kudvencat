@@ -71,11 +71,15 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, City = model.City};
+                var user = new ApplicationUser { UserName = model.Email, Email = model.Email, City = model.City };
                 var result = await userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin")
+                    {
+                        return RedirectToAction("ListUsers", "Administraiton");
+                    }
                     await signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("index", "home");
                 }
@@ -88,7 +92,8 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             return View(model);
         }
 
-        [HttpPost][HttpGet]
+        [HttpPost]
+        [HttpGet]
         //[AcceptVerbs("Get", "Post")]
         [AllowAnonymous]
         public async Task<IActionResult> IsEmailInUse(string email)

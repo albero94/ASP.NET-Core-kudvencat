@@ -164,5 +164,11 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             var roles = roleManager.Roles;
             return View(roles);
         }
+
+        public IActionResult ListUsers()
+        {
+            var users = userManager.Users;
+            return View(users);
+        }
     }
 }

@@ -43,10 +43,17 @@
                     <li class="nav-item">
                         <a asp-action="create" asp-controller="home" class="nav-link">Create</a>
                     </li>
-                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin")) 
+                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
-                        <li class="nav-item">
-                            <a asp-action="ListRoles" asp-controller="administration" class="nav-link">Manage Roles</a>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Manage
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                                <a asp-action="ListUsers" asp-controller="administration" class="dropdown-item">Users</a>
+                                <a asp-action="ListRoles" asp-controller="administration" class="dropdown-item">Roles</a>
+                            </div>
                         </li>
                     }
                 </ul>
