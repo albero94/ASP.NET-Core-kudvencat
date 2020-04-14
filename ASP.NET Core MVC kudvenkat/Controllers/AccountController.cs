@@ -76,7 +76,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin")
+                    if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
                         return RedirectToAction("ListUsers", "Administraiton");
                     }
