@@ -47,6 +47,33 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                ViewBag.Error = $"User with id {id} not found.";
+                return View("NotFound");
+            }
+
+            IdentityResult result = await userManager.DeleteAsync(user);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ListUsers");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View("ListUsers");
+        }
         [HttpGet]
         public async Task<IActionResult> EditRole(string Id)
         {
