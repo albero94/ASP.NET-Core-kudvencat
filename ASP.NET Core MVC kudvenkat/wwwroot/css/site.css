@@ -1,7 +1,13 @@
-﻿.btn{
+﻿.btn {
     width: 5em;
+    color: #fff;
 }
-.imageThumbnail{
-    height:200px;
+
+.imageThumbnail {
+    height: 200px;
     width: auto;
+}
+
+.a{
+    color:none;
 }

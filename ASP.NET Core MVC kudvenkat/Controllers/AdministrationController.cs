@@ -46,6 +46,34 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
             return View(model);
         }
+        
+        [HttpPost]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            var role = await roleManager.FindByIdAsync(id);
+
+            if (role == null)
+            {
+                ViewBag.Error = $"User with id {id} not found.";
+                return View("NotFound");
+            }
+
+            IdentityResult result = await roleManager.DeleteAsync(role);
+
+            if (result.Succeeded)
+            {
+                return RedirectToAction("ListRoles");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View("ListRoles");
+        }
 
         [HttpPost]
         public async Task<IActionResult> DeleteUser(string id)
@@ -74,6 +102,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
             return View("ListUsers");
         }
+
         [HttpGet]
         public async Task<IActionResult> EditRole(string Id)
         {

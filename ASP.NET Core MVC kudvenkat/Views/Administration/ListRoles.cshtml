@@ -21,8 +21,19 @@
                 <h5 class="card-title">@role.Name</h5>
             </div>
             <div class="card-footer">
-                <a asp-controller="administration" asp-action="EditRole" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
-                <a asp-controller="administration" asp-action="DeleteRole" class="btn btn-danger">Delete</a>
+                <form method="post" asp-action="DeleteRole" asp-route-id="@role.Id">
+                    <a asp-controller="administration" asp-action="EditRole" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
+                    <span id="deleteSpan_@role.Id">
+                        <button type="button" class="btn btn-primary"
+                           onclick="confirmDelete('@role.Id', true);">Delete</button>
+                    </span>
+                    <span id="confirmDeleteSpan_@role.Id" hidden>
+                        <span>Are you sure you want to delete?</span>
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                        <button type="button" class="btn btn-primary"
+                           onclick="confirmDelete('@role.Id', false);">No</button>
+                    </span>
+                </form>
             </div>
         </div>
     }
@@ -40,4 +51,8 @@ else
             </a>
         </div>
     </div>
+}
+
+@section Scripts{
+    <script src="~/js/CustomScript.js"></script>
 }
