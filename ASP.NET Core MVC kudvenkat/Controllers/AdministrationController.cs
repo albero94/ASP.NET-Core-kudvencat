@@ -3,7 +3,9 @@ using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,12 +16,15 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
     {
         private readonly RoleManager<IdentityRole> roleManager;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly ILogger<AdministrationController> logger;
 
         public AdministrationController(RoleManager<IdentityRole> roleManager,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogger<AdministrationController> logger)
         {
             this.roleManager = roleManager;
             this.userManager = userManager;
+            this.logger = logger;
         }
 
         [HttpGet]
@@ -58,21 +63,34 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                 return View("NotFound");
             }
 
-            IdentityResult result = await roleManager.DeleteAsync(role);
+            try
+            {
+                IdentityResult result = await roleManager.DeleteAsync(role);
 
-            if (result.Succeeded)
-            {
-                return RedirectToAction("ListRoles");
-            }
-            else
-            {
-                foreach (var error in result.Errors)
+                if (result.Succeeded)
                 {
-                    ModelState.AddModelError("", error.Description);
+                    return RedirectToAction("ListRoles");
                 }
-            }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                }
 
-            return View("ListRoles");
+                return View("ListRoles");
+            }
+            catch (DbUpdateException ex)
+            {
+                logger.LogError($"Error deleting role {ex}");
+
+                ViewBag.ErrorTitle = $"{role.Name} role is in use";
+                ViewBag.ErrorMessage = $"{role.Name} role cannot be deleted as there are users" +
+                    $"in this role. If you want to delete this role, please remove the users from" +
+                    $"the role and try to delete again.";
+                return View("Error");
+            }
         }
 
         [HttpPost]
