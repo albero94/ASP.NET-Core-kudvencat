@@ -1,5 +1,4 @@
 ﻿.btn {
-    width: 5em;
     color: #fff;
 }
 
@@ -10,4 +9,5 @@
 
 .a{
     color:none;
+    width:auto;
 }
