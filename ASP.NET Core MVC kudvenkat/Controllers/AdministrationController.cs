@@ -206,7 +206,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                 UserName = user.UserName,
                 Email = user.Email,
                 City = user.City,
-                Claims = userClaims.Select(c => c.Value).ToList(),
+                Claims = userClaims.Select(c => c.Type + " : " + c.Value).ToList(),
                 Roles = userRoles.ToList()
             };
             return View(model);
@@ -394,19 +394,16 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                 UserId = userId
             };
 
+            
             foreach (Claim claim in ClaimsStore.AllClaims)
             {
-                var UserClaim = new UserClaim
-                {
-                    ClaimType = claim.Type
-                };
+                var userClaim = new UserClaim { ClaimType = claim.Type };
 
-                if (existingUserClaims.Any(c => c.Type == UserClaim.ClaimType))
-                {
-                    UserClaim.IsSelected = true;
-                }
-
-                model.Claims.Add(UserClaim);
+                userClaim.IsSelected = existingUserClaims.Any(c => c.Type == claim.Type 
+                                                                    && c.Value == "true");
+                
+                model.Claims.Add(userClaim);
+                
             }
 
             return View(model);
@@ -431,8 +428,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             }
 
             result = await userManager.AddClaimsAsync(user,
-                model.Claims.Where(c => c.IsSelected)
-                    .Select(c => new Claim(c.ClaimType, c.ClaimType)));
+                model.Claims.Select(c => new Claim(c.ClaimType, c.IsSelected ? "true" : "false")));
 
             if (!result.Succeeded)
             {
