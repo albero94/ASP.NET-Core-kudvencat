@@ -23,12 +23,12 @@
             </div>
             <div class="card-footer">
                 <form method="post" asp-action="DeleteRole" asp-route-id="@role.Id">
-                    @if ((await authorizationService.AuthorizeAsync(User, null, "EditRolePolicy")).Succeeded)
-                    {
+                    @*@if ((await authorizationService.AuthorizeAsync(User, null, "EditRolePolicy")).Succeeded)
+                    {*@
                         <a asp-controller="administration" asp-action="EditRole" asp-route-id="@role.Id" class="btn btn-primary">Edit</a>
-                    }
+                    @*}
                     @if ((await authorizationService.AuthorizeAsync(User, null, "DeleteRolePolicy")).Succeeded)
-                    {
+                    {*@
                         <span id="deleteSpan_@role.Id">
                             <button type="button" class="btn btn-danger"
                                     onclick="confirmDelete('@role.Id', true);">
@@ -43,7 +43,7 @@
                                 No
                             </button>
                         </span>
-                    }
+                    @*  *@}
                 </form>
             </div>
         </div>
