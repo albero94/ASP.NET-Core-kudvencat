@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 {
+    // It has changed for 3.0 and does not work
+    // It has to be implemented in a different way
+    //[Authorize(Roles = "Admin")]
     public class AdministrationController : Controller
     {
         private readonly RoleManager<IdentityRole> roleManager;
@@ -57,6 +60,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "DeleteRolePolicy")]
         public async Task<IActionResult> DeleteRole(string id)
         {
             var role = await roleManager.FindByIdAsync(id);

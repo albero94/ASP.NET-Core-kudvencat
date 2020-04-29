@@ -46,6 +46,12 @@ namespace ASP.NET_Core_MVC_kudvenkat
             }).AddXmlSerializerFormatters();
             //services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
             services.AddScoped<IEmployeeRepository, SqlEmployeeRepository>();
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("DeleteRolePolicy",
+                    policy => policy.RequireClaim("Delete Role"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
