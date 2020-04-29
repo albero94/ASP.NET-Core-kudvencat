@@ -51,6 +51,9 @@ namespace ASP.NET_Core_MVC_kudvenkat
             {
                 options.AddPolicy("DeleteRolePolicy",
                     policy => policy.RequireClaim("Delete Role"));
+
+                options.AddPolicy("AdminRolePolicy",
+                    policy => policy.RequireRole("Admin"));
             });
         }
 
