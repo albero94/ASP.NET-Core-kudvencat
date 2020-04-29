@@ -34,6 +34,12 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             this.userManager = userManager;
             this.logger = logger;
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
 
         [HttpGet]
         public IActionResult CreateRole()

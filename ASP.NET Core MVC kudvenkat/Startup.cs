@@ -58,6 +58,11 @@ namespace ASP.NET_Core_MVC_kudvenkat
                 options.AddPolicy("AdminRolePolicy",
                     policy => policy.RequireRole("Admin"));
             });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.AccessDeniedPath = new PathString("/Admin/AccessDenied");
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

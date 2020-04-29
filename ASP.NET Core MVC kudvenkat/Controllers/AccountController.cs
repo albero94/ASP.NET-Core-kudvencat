@@ -103,12 +103,5 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             if (user == null) return Json(true);
             else return Json($"Email {email} is alrady in use.");
         }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult AccessDenied()
-        {
-            return View();
-        }
     }
 }
