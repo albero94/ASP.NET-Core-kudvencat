@@ -8,8 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Newtonsoft.Json.Schema;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Controllers
@@ -53,7 +55,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
             return View(model);
         }
-        
+
         [HttpPost]
         public async Task<IActionResult> DeleteRole(string id)
         {
@@ -315,7 +317,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             ViewBag.userId = userId;
             var model = new List<UserRolesViewModel>();
 
-            foreach(var role in roleManager.Roles.ToList())
+            foreach (var role in roleManager.Roles.ToList())
             {
                 var userRolesViewModel = new UserRolesViewModel
                 {
@@ -334,7 +336,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         public async Task<IActionResult> ManageUserRoles(List<UserRolesViewModel> model, string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
-            if(user == null)
+            if (user == null)
             {
                 ViewBag.Error = $"User with id {userId} cannot be found";
                 return View("NotFound");
@@ -349,7 +351,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                 return View(model);
             }
 
-            result = await userManager.AddToRolesAsync(user, 
+            result = await userManager.AddToRolesAsync(user,
                 model.Where(x => x.isSelected).Select(y => y.RoleName));
 
             if (!result.Succeeded)
@@ -359,6 +361,74 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             }
 
             return RedirectToAction("EditUser", new { Id = userId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ManageUserClaims(string userId)
+        {
+            var user = await userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id {userId} cannot be found";
+                return View("NotFound");
+            }
+
+            var existingUserClaims = await userManager.GetClaimsAsync(user);
+
+            var model = new UserClaimsViewModel
+            {
+                UserId = userId
+            };
+
+            foreach (Claim claim in ClaimsStore.AllClaims)
+            {
+                var UserClaim = new UserClaim
+                {
+                    ClaimType = claim.Type
+                };
+
+                if (existingUserClaims.Any(c => c.Type == UserClaim.ClaimType))
+                {
+                    UserClaim.IsSelected = true;
+                }
+
+                model.Claims.Add(UserClaim);
+            }
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ManageUserClaims(UserClaimsViewModel model)
+        {
+            var user = await userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = $"User with id {model.UserId} cannot be found";
+                return View("NotFound");
+            }
+
+            var claims = await userManager.GetClaimsAsync(user);
+            IdentityResult result = await userManager.RemoveClaimsAsync(user, claims);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot remove user existing claims");
+                return View(model);
+            }
+
+            result = await userManager.AddClaimsAsync(user,
+                model.Claims.Where(c => c.IsSelected)
+                    .Select(c => new Claim(c.ClaimType, c.ClaimType)));
+
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Cannot add seelcted claims to user");
+                return View(model);
+            }
+
+
+            return RedirectToAction("EditUser", new { Id = model.UserId });
         }
     }
 }
