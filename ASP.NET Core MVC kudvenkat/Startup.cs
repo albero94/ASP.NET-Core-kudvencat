@@ -1,8 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ASP.NET_Core_MVC_kudvenkat.Models;
+using ASP.NET_Core_MVC_kudvenkat.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -13,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
 
 namespace ASP.NET_Core_MVC_kudvenkat
 {
@@ -44,8 +40,6 @@ namespace ASP.NET_Core_MVC_kudvenkat
                 options.Filters.Add(new AuthorizeFilter(policy));
                 options.EnableEndpointRouting = false;
             }).AddXmlSerializerFormatters();
-            //services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
-            services.AddScoped<IEmployeeRepository, SqlEmployeeRepository>();
 
             services.AddAuthorization(options =>
             {
@@ -53,7 +47,7 @@ namespace ASP.NET_Core_MVC_kudvenkat
                     policy => policy.RequireClaim("Delete Role", "true"));
 
                 options.AddPolicy("EditRolePolicy",
-                    policy => policy.RequireAssertion(context => AuthorizeAccessToEditAdminsAndSuperAdmins(context)));
+                    policy => policy.AddRequirements(new ManageAdminRolesAndClaimsRequirements()));
 
                 options.AddPolicy("AdminRolePolicy",
                     policy => policy.RequireRole("Admin"));
@@ -61,8 +55,14 @@ namespace ASP.NET_Core_MVC_kudvenkat
 
             services.ConfigureApplicationCookie(options =>
             {
-                options.AccessDeniedPath = new PathString("/Admin/AccessDenied");
+                options.AccessDeniedPath = new PathString("/Administration/AccessDenied");
             });
+
+
+            //services.AddSingleton<IEmployeeRepository, MockEmployeeRepository>();
+            services.AddScoped<IEmployeeRepository, SqlEmployeeRepository>();
+
+            services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,13 +85,6 @@ namespace ASP.NET_Core_MVC_kudvenkat
             {
                 routes.MapRoute("default", "{controller=Home}/{action=Index}/{id?}");
             });
-        }
-
-        private bool AuthorizeAccessToEditAdminsAndSuperAdmins(AuthorizationHandlerContext context)
-        {
-            return (context.User.IsInRole("Admin")
-                        && context.User.HasClaim(claim => claim.Type == "Edit Role" && claim.Value == "true"))
-                   || context.User.IsInRole("Super Admin");
         }
     }
 }

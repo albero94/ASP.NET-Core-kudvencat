@@ -137,7 +137,6 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> EditRole(string Id)
         {
             IdentityRole role = await roleManager.FindByIdAsync(Id);
@@ -163,7 +162,6 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> EditRole(EditRoleViewModel model)
         {
             IdentityRole role = await roleManager.FindByIdAsync(model.Id);
@@ -318,6 +316,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
@@ -346,6 +345,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "EditRolePolicy")]
         public async Task<IActionResult> ManageUserRoles(List<UserRolesViewModel> model, string userId)
         {
             var user = await userManager.FindByIdAsync(userId);
