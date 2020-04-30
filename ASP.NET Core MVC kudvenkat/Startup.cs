@@ -34,7 +34,9 @@ namespace ASP.NET_Core_MVC_kudvenkat
                 options.Password.RequireUppercase = false;
 
                 options.SignIn.RequireConfirmedEmail = true;
-            }).AddEntityFrameworkStores<AppDbContext>();
+            })
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
 
             services.AddMvc(options =>
             {
@@ -52,7 +54,7 @@ namespace ASP.NET_Core_MVC_kudvenkat
                     policy => policy.AddRequirements(new ManageAdminRolesAndClaimsRequirements()));
 
                 options.AddPolicy("AdminRolePolicy",
-                    policy => policy.RequireAssertion(context => 
+                    policy => policy.RequireAssertion(context =>
                         context.User.IsInRole("Admin") || context.User.IsInRole("Super Admin")
                     ));
             });
