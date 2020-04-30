@@ -50,7 +50,9 @@ namespace ASP.NET_Core_MVC_kudvenkat
                     policy => policy.AddRequirements(new ManageAdminRolesAndClaimsRequirements()));
 
                 options.AddPolicy("AdminRolePolicy",
-                    policy => policy.RequireRole("Admin"));
+                    policy => policy.RequireAssertion(context => 
+                        context.User.IsInRole("Admin") || context.User.IsInRole("Super Admin")
+                    ));
             });
 
             services.ConfigureApplicationCookie(options =>
@@ -63,6 +65,7 @@ namespace ASP.NET_Core_MVC_kudvenkat
             services.AddScoped<IEmployeeRepository, SqlEmployeeRepository>();
 
             services.AddSingleton<IAuthorizationHandler, CanEditOnlyOtherAdminRolesAndClaimsHandler>();
+            services.AddSingleton<IAuthorizationHandler, SuperAdminHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

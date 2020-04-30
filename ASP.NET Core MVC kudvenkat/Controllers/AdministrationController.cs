@@ -16,9 +16,7 @@ using System.Threading.Tasks;
 
 namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 {
-    // It has changed for 3.0 and does not work
-    // It has to be implemented in a different way
-    //[Authorize(Roles = "Admin")]
+
     [Authorize(policy: "AdminRolePolicy")]
     public class AdministrationController : Controller
     {
