@@ -32,6 +32,8 @@ namespace ASP.NET_Core_MVC_kudvenkat
                 options.Password.RequiredLength = 8;
                 options.Password.RequiredUniqueChars = 0;
                 options.Password.RequireUppercase = false;
+
+                options.SignIn.RequireConfirmedEmail = true;
             }).AddEntityFrameworkStores<AppDbContext>();
 
             services.AddMvc(options =>

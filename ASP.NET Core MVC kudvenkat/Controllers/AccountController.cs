@@ -6,6 +6,7 @@ using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore.Internal;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -36,7 +37,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> ExternalLoginCallback (string returnUrl = null,
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = null,
                                                                 string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
@@ -58,6 +59,19 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                 ModelState.AddModelError("", "Error loading external login information");
             }
 
+            ApplicationUser user = null;
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+
+            if (email != null)
+            {
+                user = await userManager.FindByEmailAsync(email);
+                if (user != null && !user.EmailConfirmed)
+                {
+                    ModelState.AddModelError("", "Email not confirmed yet");
+                    return View("Login", loginViewModel);
+                }
+            }
+
             var signInResult = await signInManager.ExternalLoginSignInAsync(info.LoginProvider,
                 info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
 
@@ -67,12 +81,8 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             }
             else
             {
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-
-                if(email != null)
+                if (email != null)
                 {
-                    var user = await userManager.FindByEmailAsync(email);
-
                     if (user == null)
                     {
                         user = new ApplicationUser
@@ -112,8 +122,17 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            model.ExternalLogins = (await signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+
             if (ModelState.IsValid)
             {
+                var user = await userManager.FindByEmailAsync(model.Email);
+                if (user != null && !user.EmailConfirmed &&
+                    await userManager.CheckPasswordAsync(user, model.Password))
+                {
+                    ModelState.AddModelError("", "Email not confirmed yet");
+                    return View(model);
+                }
                 var result = await signInManager.PasswordSignInAsync(
                     model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
 
@@ -128,7 +147,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
             }
-            return View();
+            return View(model);
         }
 
         [HttpPost]
