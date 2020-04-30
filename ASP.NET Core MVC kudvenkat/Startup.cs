@@ -60,6 +60,12 @@ namespace ASP.NET_Core_MVC_kudvenkat
                 {
                     options.ClientId = "754507324696-chbu414k02segc92p3cldpmd0574ntu6.apps.googleusercontent.com";
                     options.ClientSecret = "YKbrUFPCr9R2BdAUFEo9B0IO";
+                })
+                .AddFacebook(options =>
+                {
+                    options.AppId = "689045918523572";
+                    options.ClientSecret = "8a7434364ee7db7fa0bda5c66f4f04e6";
+
                 });
 
             services.ConfigureApplicationCookie(options =>

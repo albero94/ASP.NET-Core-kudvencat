@@ -36,12 +36,16 @@
         <form method="post" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
             @foreach (var provider in Model.ExternalLogins)
             {
-                <button type="submit" class="btn" name="provider" value="@provider.Name">
-                    @if (provider.Name == "Google")
-                    {
-                        <img src="~/assets/btn_google_signin_light_normal_web.png" />
-                    }
-                </button>
+            <button type="submit" class="btn" name="provider" value="@provider.Name">
+                @if (provider.Name == "Google")
+                {
+                    <img src="~/assets/btn_google_signin_light_normal_web.png" />
+                }
+                @if (provider.Name == "Facebook")
+                {
+                    <img src="~/assets/btn_facebook_signin.png" />
+                }
+            </button>
             }
         </form>
     </div>
