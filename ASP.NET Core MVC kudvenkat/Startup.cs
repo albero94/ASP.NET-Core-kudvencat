@@ -55,6 +55,13 @@ namespace ASP.NET_Core_MVC_kudvenkat
                     ));
             });
 
+            services.AddAuthentication()
+                .AddGoogle(options =>
+                {
+                    options.ClientId = "754507324696-chbu414k02segc92p3cldpmd0574ntu6.apps.googleusercontent.com";
+                    options.ClientSecret = "YKbrUFPCr9R2BdAUFEo9B0IO";
+                });
+
             services.ConfigureApplicationCookie(options =>
             {
                 options.AccessDeniedPath = new PathString("/Administration/AccessDenied");

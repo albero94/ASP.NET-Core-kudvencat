@@ -29,3 +29,20 @@
         </form>
     </div>
 </div>
+
+@if (Model.ExternalLogins.Count > 0)
+{
+    <div class="row mt-3">
+        <form method="post" asp-action="ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl">
+            @foreach (var provider in Model.ExternalLogins)
+            {
+                <button type="submit" class="btn" name="provider" value="@provider.Name">
+                    @if (provider.Name == "Google")
+                    {
+                        <img src="~/assets/btn_google_signin_light_normal_web.png" />
+                    }
+                </button>
+            }
+        </form>
+    </div>
+}
