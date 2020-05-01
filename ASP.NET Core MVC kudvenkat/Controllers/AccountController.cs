@@ -30,6 +30,37 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> AddPassword()
+        {
+            if (await userManager.HasPasswordAsync(
+                await userManager.GetUserAsync(User)))
+                return RedirectToAction("ChangePassword");
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddPassword(AddPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login");
+
+            if (await userManager.HasPasswordAsync(user)) return RedirectToAction("ChangePassword");
+
+            var result = await userManager.AddPasswordAsync(user, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                PrintModelErrors(result.Errors);
+                return View();
+            }
+
+            await signInManager.RefreshSignInAsync(user);
+            return View("AddPasswordConfirmation");
+        }
+
+        [HttpGet]
         public IActionResult ChangePassword()
         {
             return View();

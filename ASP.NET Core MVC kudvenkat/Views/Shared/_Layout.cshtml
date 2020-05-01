@@ -49,7 +49,7 @@
                     <li class="nav-item">
                         <a asp-action="create" asp-controller="home" class="nav-link">Create</a>
                     </li>
-                    @if (signInManager.IsSignedIn(User) && (User.IsInRole("Admin") || User.IsInRole("Super Admin")))
+                    @if (signInManager.IsSignedIn(User))
                     {
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink"
@@ -57,9 +57,12 @@
                                 Manage
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                                <a asp-action="ListUsers" asp-controller="administration" class="dropdown-item">Users</a>
-                                <a asp-action="ListRoles" asp-controller="administration" class="dropdown-item">Roles</a>
-                                <a asp-action="ChangePassword" asp-controller="Account" class="dropdown-item">Password</a>
+                                @if (User.IsInRole("Admin") || User.IsInRole("SuperAdmin"))
+                                {
+                                    <a asp-action="ListUsers" asp-controller="administration" class="dropdown-item">Users</a>
+                                    <a asp-action="ListRoles" asp-controller="administration" class="dropdown-item">Roles</a>
+                                }
+                                <a asp-action="AddPassword" asp-controller="Account" class="dropdown-item">Password</a>
                             </div>
                         </li>
                     }
@@ -69,7 +72,7 @@
                     {
                         <li class="nav-item">
                             <form asp-controller="account" asp-action="logout" method="post">
-                                <button type="submit" class="nav-link btn btn-link py-0" >
+                                <button type="submit" class="nav-link btn btn-link py-0">
                                     Logout @User.Identity.Name
                                 </button>
                             </form>
