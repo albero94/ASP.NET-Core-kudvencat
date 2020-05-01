@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -119,6 +120,8 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                         };
 
                         await userManager.CreateAsync(user);
+                        await GenerateAndLogConfirmationLink(user);
+                        return RedirectToRegistrationMessageView();
                     }
 
                     await userManager.AddLoginAsync(user, info);
@@ -132,6 +135,29 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             ViewBag.ErrorMessage = $"Please contact support on ealbero94@gmail.com";
             return View("Error");
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user != null && await userManager.IsEmailConfirmedAsync(user))
+            {
+                var token = userManager.GeneratePasswordResetTokenAsync(user);
+                var passwordResetLink = Url.Action("ResetPassword", "Account", new { email = model.Email, token = token }, Request.Scheme);
+                logger.LogWarning(passwordResetLink);
+            }
+            return View("ForgotPasswordConfirmation");
+        }
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> Login(string returnUrl)
@@ -202,18 +228,14 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
                 if (result.Succeeded)
                 {
-                    var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
-                    logger.LogWarning(confirmationLink);
+                    await GenerateAndLogConfirmationLink(user);
 
                     if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
                     {
                         return RedirectToAction("ListUsers", "Administration");
                     }
 
-                    ViewBag.ErrorTitle = "Registration successful";
-                    ViewBag.ErrorMessage = "Beofre you can login, please confirm your email by clicking on the confirmatoin link we have emailed you";
-                    return View("Error");
+                    return RedirectToRegistrationMessageView();
                 }
 
                 foreach (var error in result.Errors)
@@ -223,6 +245,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             }
             return View(model);
         }
+
 
         [HttpPost]
         [HttpGet]
@@ -234,6 +257,20 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
 
             if (user == null) return Json(true);
             else return Json($"Email {email} is alrady in use.");
+        }
+
+        // PRIVATE METHODS
+        private async Task GenerateAndLogConfirmationLink(ApplicationUser user)
+        {
+            var token = await userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
+            logger.LogWarning(confirmationLink);
+        }
+        private IActionResult RedirectToRegistrationMessageView()
+        {
+            ViewBag.ErrorTitle = "Registration successful";
+            ViewBag.ErrorMessage = "Beofre you can login, please confirm your email by clicking on the confirmatoin link we have emailed you";
+            return View("Error");
         }
     }
 }
