@@ -151,11 +151,23 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             var user = await userManager.FindByEmailAsync(model.Email);
             if (user != null && await userManager.IsEmailConfirmedAsync(user))
             {
-                var token = userManager.GeneratePasswordResetTokenAsync(user);
+                var token = await userManager.GeneratePasswordResetTokenAsync(user);
                 var passwordResetLink = Url.Action("ResetPassword", "Account", new { email = model.Email, token = token }, Request.Scheme);
                 logger.LogWarning(passwordResetLink);
             }
             return View("ForgotPasswordConfirmation");
+        }
+
+        [HttpPost]
+        [HttpGet]
+        //[AcceptVerbs("Get", "Post")]
+        [AllowAnonymous]
+        public async Task<IActionResult> IsEmailInUse(string email)
+        {
+            var user = await userManager.FindByEmailAsync(email);
+
+            if (user == null) return Json(true);
+            else return Json($"Email {email} is alrady in use.");
         }
 
         [HttpGet]
@@ -246,17 +258,37 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             return View(model);
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult ResetPassword(string email, string token)
+        {
+            if (email == null || token == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
 
         [HttpPost]
-        [HttpGet]
-        //[AcceptVerbs("Get", "Post")]
         [AllowAnonymous]
-        public async Task<IActionResult> IsEmailInUse(string email)
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
         {
-            var user = await userManager.FindByEmailAsync(email);
+            var user = await userManager.FindByEmailAsync(model.Email);
+            if (user == null) return View("ResetPasswordConfirmation");
 
-            if (user == null) return Json(true);
-            else return Json($"Email {email} is alrady in use.");
+            var result = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if (result.Succeeded)
+            {
+                return View("ResetPasswordConfirmation");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+                return View(model);
+            }
         }
 
         // PRIVATE METHODS
