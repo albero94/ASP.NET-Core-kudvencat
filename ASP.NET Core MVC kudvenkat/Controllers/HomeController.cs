@@ -1,10 +1,13 @@
 ﻿using ASP.NET_Core_MVC_kudvenkat.Models;
+using ASP.NET_Core_MVC_kudvenkat.Security;
 using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic.CompilerServices;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,31 +22,40 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IWebHostEnvironment hostingEnvironment;
         private readonly ILogger logger;
+        private readonly IDataProtector protector;
 
         public HomeController(IEmployeeRepository employeeRepository,
             IWebHostEnvironment hostingEnvironment,
-            ILogger<HomeController> logger)
+            ILogger<HomeController> logger, 
+            IDataProtectionProvider dataProtectionProvider,
+            DataProtectionPurposeStrings dataProtectionPurposeStrings)
         {
             _employeeRepository = employeeRepository;
             this.hostingEnvironment = hostingEnvironment;
             this.logger = logger;
+            this.protector = dataProtectionProvider.CreateProtector(dataProtectionPurposeStrings.EmployeeIdRouteValue);
         }
         [AllowAnonymous]
         public ViewResult Index()
         {
-            var model = _employeeRepository.GetAllEmployees();
+            var model = _employeeRepository.GetAllEmployees()
+                                            .Select( e=> 
+                                            {
+                                                e.EncryptedId = protector.Protect(e.Id.ToString());
+                                                return e;
+                                            });
             return View(model);
         }
         [AllowAnonymous]
-        public ViewResult Details(int? id)
+        public ViewResult Details(string id)
         {
-            //throw new Exception("Error in Details View");
-            Employee employee = _employeeRepository.GetEmployee(id ?? 1);
+            int  employeeId = Convert.ToInt32(protector.Unprotect(id));
+            Employee employee = _employeeRepository.GetEmployee(employeeId);
 
             if(employee == null)
             {
                 Response.StatusCode = 404;
-                return View("EmployeeNofFound", id.Value);
+                return View("EmployeeNofFound", employeeId);
             }
 
             HomeDetailsViewModel homeDetailsViewModel = new HomeDetailsViewModel()
