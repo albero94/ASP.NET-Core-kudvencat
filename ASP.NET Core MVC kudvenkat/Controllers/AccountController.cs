@@ -1,5 +1,6 @@
-﻿using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using ASP.NET_Core_MVC_kudvenkat.Models;
@@ -7,9 +8,6 @@ using ASP.NET_Core_MVC_kudvenkat.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Logging;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -29,6 +27,31 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.logger = logger;
+        }
+
+        [HttpGet]
+        public IActionResult ChangePassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await userManager.GetUserAsync(User);
+            if (user == null) return RedirectToAction("Login");
+
+            var result = await userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                PrintModelErrors(result.Errors);
+                return View();
+            }
+
+            await signInManager.RefreshSignInAsync(user);
+            return View("ChangePasswordConfirmation");
         }
 
         [AllowAnonymous]
@@ -250,10 +273,8 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                     return RedirectToRegistrationMessageView();
                 }
 
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
+                PrintModelErrors(result.Errors);
+
             }
             return View(model);
         }
@@ -283,10 +304,8 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             }
             else
             {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError("", error.Description);
-                }
+                PrintModelErrors(result.Errors);
+
                 return View(model);
             }
         }
@@ -298,11 +317,19 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
             logger.LogWarning(confirmationLink);
         }
+        private void PrintModelErrors(IEnumerable<IdentityError> errors)
+        {
+            foreach (var error in errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+        }
         private IActionResult RedirectToRegistrationMessageView()
         {
             ViewBag.ErrorTitle = "Registration successful";
             ViewBag.ErrorMessage = "Beofre you can login, please confirm your email by clicking on the confirmatoin link we have emailed you";
             return View("Error");
         }
+
     }
 }
