@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -253,7 +254,7 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                     return View(model);
                 }
                 var result = await signInManager.PasswordSignInAsync(
-                    model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
 
                 if (result.Succeeded)
                 {
@@ -263,6 +264,8 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
                     }
                     return RedirectToAction("index", "home");
                 }
+
+                if (result.IsLockedOut) return View("AccountLocked");
 
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
             }
@@ -331,6 +334,9 @@ namespace ASP.NET_Core_MVC_kudvenkat.Controllers
             var result = await userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (result.Succeeded)
             {
+                if(await userManager.IsLockedOutAsync(user)) 
+                    await userManager.SetLockoutEndDateAsync(user, DateTimeOffset.UtcNow);
+
                 return View("ResetPasswordConfirmation");
             }
             else
