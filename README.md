@@ -1,6 +1,6 @@
 # ASP.NET-Core-kudvencat
 
-This tutorial is based on a video series of more than 20 hours about .NET Core MVC, that has probably taken me around 100h to complete and fully understand.
+This course is based on a video series of more than 20 hours about .NET Core MVC, that has probably taken me around 100h to complete and fully understand.
 
 It is really intersting how the author goes into so much detail about the framework. I was already familiar with .NET and I had worked with it during more than 1 year in a project with USDA. This tutorial helped me understand much better the underlying details of the framework, learn what it is doing for us, and learn how to take the best out of it.
 
